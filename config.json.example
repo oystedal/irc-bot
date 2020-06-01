@@ -1,0 +1,12 @@
+{
+    "irc": {
+        "server": "localhost",
+        "channel": "#bots",
+        "nick": "borky"
+    },
+    "apis": {
+        "youtube": {
+            "key": "..."
+        }
+    }
+}
