@@ -5,13 +5,14 @@ An IRC bot written in C++ using boost asio.
 
 ### build
 
-First time, build dependencies and run `meson`:
+First time setup: Fetch external dependencies, build dependencies, and run `meson`:
 ```
+vcs-import --input external_repositories.yaml third_party
 ./build_dependencies.sh
 meson build
 ```
 
-Then to build:
+Execute ninja to build
 ```
 ninja -C build
 ```
