@@ -13,7 +13,7 @@ openssl = compiler.find_library('ssl', static: true, dirs: [meson.current_source
 crypto = compiler.find_library('crypto', static: true, dirs: [meson.current_source_dir() + '/third_party/openssl'] )
 dl = compiler.find_library('dl', static: true, dirs: [meson.current_source_dir() + '/third_party/openssl/openssl-1.1.1g'] )
 curl = compiler.find_library('curl', static: true, dirs: [meson.current_source_dir() + '/third_party/curl/lib/.libs'] )
-cares = compiler.find_library('cares_static', static: true, dirs: [meson.current_source_dir() + '/third_party/c-ares/build/lib'] )
+cares = compiler.find_library('cares', static: true, dirs: [meson.current_source_dir() + '/third_party/c-ares/build/lib'] )
 z = compiler.find_library('z', static: true)
 
 includes = include_directories('third_party/nlohmann_json/single_include', 'third_party/ctre/single-header')
