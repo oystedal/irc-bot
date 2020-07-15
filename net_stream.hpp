@@ -171,9 +171,12 @@ private:
             stream_, read_buffer_, "\n",
             [this] (boost::system::error_code ec, std::size_t transferred) {
                 (void)transferred;
-                // fmt::print("read callback, ec={} transfer={}\n", ec.message(), transferred);
 
-                // TODO: check ec
+                if (ec) {
+                    fmt::print("read callback, ec={} transfer={}\n", ec.message(), transferred);
+                    boost::asio::post( executor_, [this, ec] { error_callback_(ec); });
+                    return;
+                }
 
                 std::istream is(&read_buffer_);
                 std::string str;
@@ -186,10 +189,7 @@ private:
                     executor_.post([this, str = std::move(str)] { on_read_(str); });
                 }
 
-                // TODO: Add test for this case
-                if (!ec || ec != boost::asio::error::eof) {
-                    do_read();
-                }
+                do_read();
             }
         );
     }

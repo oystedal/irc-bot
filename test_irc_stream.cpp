@@ -279,6 +279,18 @@ public:
         pending_reads.pop_front();
     }
 
+    void push(boost::system::error_code ec)
+    {
+        if (pending_reads.empty()) {
+            throw std::logic_error("push() with no pending read requests");
+        }
+
+        auto& read_request = pending_reads.front();
+        read_request.callback(ec, 0);
+
+        pending_reads.pop_front();
+    }
+
     void simulate_handshake()
     {
         if (pending_handshakes.empty()) {
@@ -698,6 +710,32 @@ TEST_F(Connected, test_skip_empty_lines)
     ASSERT_EQ(2, lines.size());
     EXPECT_EQ("asdf", lines[0]);
     EXPECT_EQ("foo", lines[1]);
+}
+
+TEST_F(Connected, test_read_until_eof)
+{
+    std::vector<std::string> lines;
+    irc.on_read([&] (std::string_view str) {
+        lines.emplace_back(std::string(str));
+    });
+
+    irc.on_error([this] (auto) {
+        ++error_call_count;
+    });
+
+    stream.push("asdf\r\n");
+    executor.run();
+
+    ASSERT_EQ(1, lines.size());
+    EXPECT_EQ("asdf", lines[0]);
+    EXPECT_EQ(0, error_call_count);
+    ASSERT_EQ(1, stream.pending_reads.size());
+
+    stream.push(boost::asio::error::eof);
+    executor.run();
+
+    EXPECT_EQ(1, error_call_count);
+    ASSERT_EQ(0, stream.pending_reads.size());
 }
 
 TEST_F(Connected, test_single_write_call_writes_to_stream)
